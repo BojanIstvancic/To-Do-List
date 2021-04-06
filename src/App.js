@@ -1,23 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, createContext } from "react";
+import { Switch, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+
+import "./app.css";
+
+export const ContextData = createContext();
+export const UpdateContextData = createContext();
 
 function App() {
+  const getData = () => {
+    let scores;
+    let sortedScores;
+    if (localStorage.getItem("scores") === null) {
+      sortedScores = [];
+    } else {
+      scores = JSON.parse(localStorage.getItem("scores"));
+      sortedScores = scores.sort((a, b) => b.score - a.score);
+    }
+    return sortedScores;
+  };
+
+  const [data, setData] = useState(getData());
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ContextData.Provider value={data}>
+        <UpdateContextData.Provider value={setData}>
+          <Switch>
+            <Route>
+              <HomePage path="/" />
+            </Route>
+          </Switch>
+        </UpdateContextData.Provider>
+      </ContextData.Provider>
     </div>
   );
 }
